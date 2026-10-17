@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr2X.Ai - Ultimate Workspace</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --bg-main: #131314;
+            --bg-sidebar: #1e1f20;
+            --bg-input: #1e1f20;
+            --text-primary: #e3e3e3;
+            --text-secondary: #c4c7c5;
+            --accent-color: #00ffcc;
+            --user-bubble: #333538;
+            --border-color: #444746;
+            --font-main: 'Outfit', 'Roboto', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
+        body { background-color: var(--bg-main); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
+
+        /* --- LOGIN SCREEN --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); display: none; 
+            justify-content: center; align-items: center; z-index: 9999;
+        }
+
+        .login-box {
+            background: var(--bg-sidebar); padding: 40px; border-radius: 28px;
+            width: 400px; text-align: center; border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+        }
+
+        .login-box svg { width: 48px; height: 48px; fill: var(--accent-color); margin-bottom: 20px; }
+        .login-box h1 { font-size: 24px; font-weight: 500; margin-bottom: 10px; color: var(--accent-color); }
+        .login-box p { color: var(--text-secondary); margin-bottom: 30px; font-size: 15px; }
+        
+        .login-box input {
+            width: 100%; padding: 18px; margin-bottom: 15px; background: transparent;
+            border: 1px solid var(--border-color); color: var(--text-primary);
+            border-radius: 8px; outline: none; font-size: 16px; transition: 0.3s;
+        }
+
+        .login-box input:focus { border-color: var(--accent-color); border-width: 2px; }
+
+        .login-box button {
+            width: 100%; padding: 16px; background: var(--accent-color); color: #000;
+            border: none; border-radius: 24px; font-weight: bold; font-size: 16px;
+            cursor: pointer; transition: 0.2s; margin-top: 10px;
+        }
+        .login-box button:hover { background: #00ccaa; box-shadow: 0 0 15px var(--accent-color); }
+
+        /* --- SIDEBAR --- */
+        #app-container { display: none; width: 100%; height: 100%; }
+        aside {
+            width: 280px; background: var(--bg-sidebar); display: flex; flex-direction: column;
+            padding: 20px 10px; border-right: 1px solid transparent; transition: 0.3s;
+        }
+
+        .new-chat-btn {
+            background: var(--bg-main); color: var(--text-secondary); border: none;
+            padding: 12px 15px; border-radius: 50px; display: flex; align-items: center; gap: 15px;
+            cursor: pointer; font-size: 14px; font-weight: 500; margin-bottom: 30px; width: max-content;
+        }
+        .new-chat-btn:hover { background: var(--user-bubble); color: var(--text-primary); }
+        .new-chat-btn svg { width: 18px; fill: currentColor; }
+
+        .recent-section { flex: 1; overflow-y: auto; }
+        .recent-title { padding: 0 15px; font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; font-weight: 500; }
+        
+        .sidebar-bottom { margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 15px; }
+        .sidebar-btn { display: flex; align-items: center; gap: 15px; padding: 12px 15px; color: var(--text-secondary); cursor: pointer; border-radius: 50px; font-size: 14px; }
+        .sidebar-btn:hover { background: var(--bg-main); color: var(--text-primary); }
+        .sidebar-btn svg { width: 18px; fill: currentColor; }
+
+        /* --- MAIN CHAT AREA --- */
+        main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        /* RGB ANIMATED TITLE */
+        .rgb-title {
+            font-size: 24px; font-weight: 700; letter-spacing: 1.5px; cursor: default;
+            background: linear-gradient(270deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00ffff, #0000ff, #8a2be2, #ff00ff);
+            background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: rgb-glow 3s linear infinite;
+        }
+        @keyframes rgb-glow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
+        .model-selector select {
+            background: var(--bg-sidebar); color: var(--accent-color); font-size: 14px; font-weight: 600;
+            border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; outline: none; cursor: pointer; 
+            max-width: 200px; text-transform: uppercase;
+        }
+        .model-selector select:hover { border-color: var(--accent-color); }
+
+        .user-profile {
+            width: 38px; height: 38px; background: linear-gradient(45deg, #ff5722, #ff9800); color: white; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; text-transform: uppercase;
+        }
+
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth; }
+        .chat-container::-webkit-scrollbar { width: 8px; }
+        .chat-container::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
+
+        /* --- GREETING --- */
+        .greeting-screen { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 60%; width: 100%; max-width: 800px; margin-top: 50px; }
+        .greeting-screen h1 {
+            font-size: 56px; font-weight: 500; margin-bottom: 10px; letter-spacing: -1px;
+            background: -webkit-linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #00ffcc 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #00ffcc 50%, #d96570 56%, #131314 75%, #131314 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 400% 100%;
+        }
+        .greeting-screen h2 { font-size: 56px; color: var(--border-color); font-weight: 500; letter-spacing: -1px; }
+
+        /* --- MESSAGES --- */
+        .message-row { display: flex; width: 100%; max-width: 800px; margin-bottom: 30px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .user-row { justify-content: flex-end; }
+        .bot-row { justify-content: flex-start; gap: 15px; }
+
+        .bot-avatar { width: 32px; height: 32px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-start; margin-top: 5px; }
+        .bot-avatar svg { width: 24px; fill: var(--accent-color); }
+
+        .user-bubble { background: var(--user-bubble); padding: 12px 20px; border-radius: 24px; font-size: 16px; line-height: 1.5; max-width: 80%; word-wrap: break-word; }
+        .bot-bubble { max-width: 90%; font-size: 16px; line-height: 1.7; color: var(--text-primary); }
+        .bot-bubble p { margin-bottom: 15px; }
+        .bot-bubble strong { color: #fff; font-weight: 500; }
+        
+        pre { background: #000; padding: 15px; border-radius: 12px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,255,204,0.1); }
+        code { font-family: 'Consolas', monospace; font-size: 14px; color: #00ffcc; }
+        .bot-bubble :not(pre) > code { background: #2a2b2d; padding: 3px 6px; border-radius: 6px; color: var(--accent-color); font-size: 14px; }
+
+        .attached-media-chat { max-width: 250px; border-radius: 12px; margin-bottom: 10px; display: block; border: 1px solid var(--border-color); }
+
+        /* --- INPUT AREA & ATTACHMENTS --- */
+        .input-area-wrapper { padding: 0 20px 30px; display: flex; justify-content: center; flex-direction: column; align-items: center; }
+        
+        .input-box {
+            background: var(--bg-input); width: 100%; max-width: 850px; border-radius: 24px; padding: 10px 20px;
+            display: flex; flex-direction: column; border: 1px solid var(--border-color); transition: 0.3s;
+        }
+        .input-box:focus-within { background: #2a2b2d; border-color: var(--accent-color); box-shadow: 0 0 10px rgba(0,255,204,0.1); }
+        
+        #attachment-preview {
+            display: none; gap: 10px; padding-bottom: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;
+        }
+        .preview-item { position: relative; display: inline-block; }
+        .preview-item img, .preview-item video { height: 60px; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; }
+        .preview-remove {
+            position: absolute; top: -5px; right: -5px; background: #ff4444; color: white; width: 20px; height: 20px;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; font-weight: bold;
+        }
+
+        .input-controls { display: flex; align-items: center; gap: 10px; width: 100%; }
+        .input-controls input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 16px; outline: none; padding: 10px 5px; }
+        .input-controls input::placeholder { color: var(--text-secondary); }
+        
+        .icon-btn { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: 0.2s; }
+        .icon-btn:hover { background: var(--bg-main); color: var(--accent-color); }
+        .icon-btn svg { width: 22px; fill: currentColor; }
+        
+        .disclaimer { font-size: 12px; color: var(--text-secondary); margin-top: 15px; text-align: center; }
+        .loading { display: none; margin-bottom: 20px; font-style: italic; color: var(--accent-color); text-align:center; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/></svg>
+            <h1>Mr2X.Ai Terminal</h1>
+            <p>Access Required</p>
+            <input type="text" id="login-name" placeholder="Enter your name (e.g. Mahir)">
+            <input type="password" id="login-pass" placeholder="Enter PIN" onkeypress="handleLoginEnter(event)">
+            <button onclick="handleLogin()">INITIALIZE</button>
+            <p id="login-error" style="color: #ff5c5c; margin-top: 10px; display: none;">Access Denied. Try Again.</p>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <aside>
+            <button class="new-chat-btn" onclick="resetChat()">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New chat
+            </button>
+            <div class="recent-section">
+                <div class="recent-title">Recent</div>
+                <div class="sidebar-btn"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> System Booted</div>
+            </div>
+            <div class="sidebar-bottom">
+                <div class="sidebar-btn" onclick="handleLogout()"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg> Disconnect</div>
+            </div>
+        </aside>
+
+        <main>
+            <header>
+                <div class="header-left">
+                    <div class="rgb-title">Mr2X.Ai</div>
+                    <div class="model-selector">
+                        <select id="model-select">
+                            <option value="">Fetching...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="user-profile" id="user-avatar">M</div>
+            </header>
+
+            <div class="chat-container" id="chat-box">
+                <div class="greeting-screen" id="greeting-screen">
+                    <h1 id="greeting-name">Hello, User</h1>
+                    <h2>Ready to write some code?</h2>
+                </div>
+            </div>
+            <div class="loading" id="typing-indicator">> Mr2X.Ai is processing...</div>
+
+            <div class="input-area-wrapper">
+                <div class="input-box">
+                    <div id="attachment-preview"></div>
+                    <div class="input-controls">
+                        <input type="file" id="file-upload" accept="image/*, video/*" style="display: none;" onchange="handleFileUpload(event)">
+                        
+                        <button class="icon-btn" title="Add Image/Video" onclick="document.getElementById('file-upload').click()">
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        </button>
+                        
+                        <input type="text" id="chat-input" placeholder="Message Mr2X.Ai..." autocomplete="off" onkeypress="handleEnter(event)">
+                        
+                        <button class="icon-btn" style="color: var(--accent-color)" onclick="sendMessage()">
+                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="disclaimer">Mr2X.Ai Auto-Engine enabled. Chats are saved to your local device.</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_KEY = "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"; 
+        const BACKUP_MODELS = [
+            "llama-3.1-70b-versatile",
+            "llama-3.1-8b-instant",
+            "mixtral-8x7b-32768",
+            "gemma2-9b-it"
+        ];
+        
+        marked.setOptions({
+            highlight: function(code, lang) {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            },
+            langPrefix: 'hljs language-'
+        });
+
+        const loginOverlay = document.getElementById('login-overlay');
+        const appContainer = document.getElementById('app-container');
+        const chatBox = document.getElementById('chat-box');
+        const chatInput = document.getElementById('chat-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const greetingScreen = document.getElementById('greeting-screen');
+        const modelSelect = document.getElementById('model-select');
+        
+        let attachedMediaData = null;
+        let attachedMediaType = null;
+        let currentUserName = "";
+
+        const systemPrompt = { role: "system", content: "You are Mr2X.Ai, an advanced AI assistant. You speak perfect Bangla, Banglish, and English fluently. Always reply in the language the user uses. IMPORTANT RULE: If and ONLY IF the user explicitly asks 'who created you', 'tomake ke baniyeche', or 'who made you', you must proudly answer that you were created by the genius pro coder Muntasir Mahir. For all other questions, answer normally as a highly intelligent AI without mentioning him." };
+        
+        let conversationHistory = [systemPrompt];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const loggedInUser = localStorage.getItem("mr2x_user_session");
+            if(loggedInUser) {
+                showApp(loggedInUser);
+            } else {
+                loginOverlay.style.display = 'flex'; 
+            }
+        });
+
+        async function fetchLiveModels() {
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/models", {
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${API_KEY}` }
+                });
+                if(!response.ok) throw new Error("API Key issue");
+                
+                const data = await response.json();
+                modelSelect.innerHTML = ''; 
+                
+                let count = 1;
+                data.data.forEach(model => {
+                    if(!model.id.includes("whisper") && !model.id.includes("embed") && count <= 5) {
+                        const opt = document.createElement('option');
+                        opt.value = model.id;
+                        
+                        let label = "2X Engine";
+                        if(count === 1) label = "2X Flash";
+                        if(count === 2) label = "2X Pro";
+                        if(count === 3) label = "2X Normal";
+                        if(count === 4) label = "2X Lite";
+                        if(count === 5) label = "2X Legacy";
+                        
+                        opt.textContent = label;
+                        modelSelect.appendChild(opt);
+                        count++;
+                    }
+                });
+            } catch (error) {
+                modelSelect.innerHTML = '<option value="llama-3.1-8b-instant">2X Rescue</option>';
+            }
+        }
+
+        function handleLoginEnter(event) { if (event.key === "Enter") handleLogin(); }
+
+        function handleLogin() {
+            const name = document.getElementById('login-name').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if(name.length > 0 && pass.length > 0) {
+                localStorage.setItem("mr2x_user_session", name);
+                showApp(name);
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("mr2x_user_session");
+            appContainer.style.display = 'none';
+            loginOverlay.style.display = 'flex';
+            document.getElementById('login-name').value = '';
+            document.getElementById('login-pass').value = '';
+        }
+
+        function showApp(name) {
+            currentUserName = name;
+            loginOverlay.style.display = 'none';
+            appContainer.style.display = 'flex';
+            document.getElementById('user-avatar').innerText = name.charAt(0).toUpperCase();
+            document.getElementById('greeting-name').innerHTML = `<span style="color:var(--accent-color)">Welcome, ${name}</span>`;
+            
+            fetchLiveModels();
+            loadChatHistory(); // Load saved chats based on IP/Device!
+            chatInput.focus();
+        }
+
+        // --- LOCAL STORAGE CHAT HISTORY SAVING ---
+        function saveChatHistory() {
+            if(currentUserName) {
+                // Save JSON for API context
+                localStorage.setItem(`mr2x_chat_data_${currentUserName}`, JSON.stringify(conversationHistory));
+                // Save HTML for UI rendering
+                localStorage.setItem(`mr2x_chat_html_${currentUserName}`, chatBox.innerHTML);
+            }
+        }
+
+        function loadChatHistory() {
+            const savedData = localStorage.getItem(`mr2x_chat_data_${currentUserName}`);
+            const savedHTML = localStorage.getItem(`mr2x_chat_html_${currentUserName}`);
+            
+            if(savedData && savedHTML) {
+                conversationHistory = JSON.parse(savedData);
+                chatBox.innerHTML = savedHTML;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // Hide greeting if history exists and isn't empty
+                if(conversationHistory.length > 1) {
+                    const greeting = document.getElementById('greeting-screen');
+                    if(greeting) greeting.style.display = 'none';
+                }
+            } else {
+                resetChat(false); // don't focus if just initializing
+            }
+        }
+
+        function resetChat(focus = true) {
+            chatBox.innerHTML = '';
+            chatBox.appendChild(greetingScreen);
+            greetingScreen.style.display = 'flex';
+            conversationHistory = [systemPrompt];
+            clearAttachment();
+            saveChatHistory(); // Clear saved data too
+            if(focus) chatInput.focus();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                attachedMediaData = e.target.result;
+                attachedMediaType = file.type;
+                
+                const previewDiv = document.getElementById('attachment-preview');
+                previewDiv.style.display = 'flex';
+                
+                let mediaHtml = '';
+                if(file.type.startsWith('image/')) {
+                    mediaHtml = `<img src="${attachedMediaData}">`;
+                } else if (file.type.startsWith('video/')) {
+                    mediaHtml = `<video src="${attachedMediaData}" muted></video>`;
+                }
+                
+                previewDiv.innerHTML = `
+                    <div class="preview-item">
+                        ${mediaHtml}
+                        <div class="preview-remove" onclick="clearAttachment()">✕</div>
+                    </div>
+                `;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function clearAttachment() {
+            attachedMediaData = null;
+            attachedMediaType = null;
+            document.getElementById('file-upload').value = '';
+            const previewDiv = document.getElementById('attachment-preview');
+            previewDiv.innerHTML = '';
+            previewDiv.style.display = 'none';
+        }
+
+        function handleEnter(event) { if (event.key === "Enter") sendMessage(); }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if(!text && !attachedMediaData) return;
+
+            if (greetingScreen.style.display !== 'none') {
+                greetingScreen.style.display = 'none';
+            }
+
+            addUserMessage(text, attachedMediaData, attachedMediaType);
+            chatInput.value = '';
+            typingIndicator.style.display = 'block';
+            typingIndicator.innerText = "> Mr2X.Ai is processing...";
+
+            let promptContent = text || "Check out this media.";
+            if(attachedMediaData) {
+                promptContent += "\n[System Note: User has attached a media file. Please acknowledge it based on the prompt.]";
+            }
+            
+            clearAttachment();
+
+            conversationHistory.push({ role: "user", content: promptContent });
+            
+            // Context Window Management
+            if (conversationHistory.length > 20) {
+                conversationHistory = [conversationHistory[0], ...conversationHistory.slice(-19)];
+            }
+            saveChatHistory(); // Save immediately after user sends
+
+            let currentModel = document.getElementById('model-select').value;
+            let modelsToTry = [currentModel, ...BACKUP_MODELS.filter(m => m !== currentModel)];
+            
+            let success = false;
+            let finalReply = "";
+
+            for (let i = 0; i < modelsToTry.length; i++) {
+                try {
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ model: modelsToTry[i], messages: conversationHistory, temperature: 0.7 })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Model ${modelsToTry[i]} failed.`);
+                    }
+
+                    const data = await response.json();
+                    finalReply = data.choices[0].message.content;
+                    success = true;
+                    break;
+                } catch (error) {
+                    console.log(`Fallback triggered: ${modelsToTry[i]} failed. Trying next...`);
+                    typingIndicator.innerText = "> Re-routing connection...";
+                }
+            }
+
+            if (success) {
+                conversationHistory.push({ role: "assistant", content: finalReply });
+                addBotMessage(finalReply);
+            } else {
+                addBotMessage(`**[SYSTEM OVERLOAD]:** The servers are currently facing heavy traffic. Please try again in 10 seconds.`);
+                conversationHistory.pop(); 
+            }
+
+            saveChatHistory(); // Save after bot replies
+            typingIndicator.style.display = 'none';
+            chatBox.scrollTop = chatBox.scrollHeight;
+            chatInput.focus();
+        }
+
+        function addUserMessage(text, mediaUrl, mediaType) {
+            const row = document.createElement('div');
+            row.classList.add('message-row', 'user-row');
+            const bubble = document.createElement('div');
+            bubble.classList.add('user-bubble');
+            
+            if(mediaUrl) {
+                if(mediaType.startsWith('image/')) {
+                    bubble.innerHTML += `<img src="${mediaUrl}" class="attached-media-chat"><br>`;
+                } else if(mediaType.startsWith('video/')) {
+                    bubble.innerHTML += `<video src="${mediaUrl}" class="attached-media-chat" controls></video><br>`;
+                }
+            }
+            if(text) bubble.appendChild(document.createTextNode(text));
+
+            row.appendChild(bubble);
+            chatBox.appendChild(row);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function addBotMessage(text) {
+            const row = document.createElement('div');
+            row.classList.add('message-row', 'bot-row');
+            const avatar = document.createElement('div');
+            avatar.classList.add('bot-avatar');
+            avatar.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2V7h-2v10z"/></svg>`;
+            const bubble = document.createElement('div');
+            bubble.classList.add('bot-bubble');
+            bubble.innerHTML = marked.parse(text);
+            row.appendChild(avatar);
+            row.appendChild(bubble);
+            chatBox.appendChild(row);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
