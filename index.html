@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mr2X.Ai - Ultimate Workspace</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -26,21 +26,19 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
-        body { background-color: var(--bg-main); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; }
+        body { background-color: var(--bg-main); color: var(--text-primary); height: 100vh; display: flex; overflow: hidden; width: 100%; }
 
         /* --- LOGIN SCREEN --- */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-main); display: none; 
-            justify-content: center; align-items: center; z-index: 9999;
+            justify-content: center; align-items: center; z-index: 9999; padding: 20px;
         }
 
         .login-box {
-            background: var(--bg-sidebar); padding: 40px; border-radius: 28px;
-            width: 400px; text-align: center; border: 1px solid var(--border-color);
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+            background: var(--bg-sidebar); width: 100%; max-width: 400px; padding: 40px; border-radius: 28px;
+            text-align: center; border: 1px solid var(--border-color); box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
         }
-
         .login-box svg { width: 48px; height: 48px; fill: var(--accent-color); margin-bottom: 20px; }
         .login-box h1 { font-size: 24px; font-weight: 500; margin-bottom: 10px; color: var(--accent-color); }
         .login-box p { color: var(--text-secondary); margin-bottom: 30px; font-size: 15px; }
@@ -50,7 +48,6 @@
             border: 1px solid var(--border-color); color: var(--text-primary);
             border-radius: 8px; outline: none; font-size: 16px; transition: 0.3s;
         }
-
         .login-box input:focus { border-color: var(--accent-color); border-width: 2px; }
 
         .login-box button {
@@ -61,10 +58,11 @@
         .login-box button:hover { background: #00ccaa; box-shadow: 0 0 15px var(--accent-color); }
 
         /* --- SIDEBAR --- */
-        #app-container { display: none; width: 100%; height: 100%; }
+        #app-container { display: none; width: 100%; height: 100%; position: relative; }
         aside {
             width: 280px; background: var(--bg-sidebar); display: flex; flex-direction: column;
-            padding: 20px 10px; border-right: 1px solid transparent; transition: 0.3s;
+            padding: 20px 10px; border-right: 1px solid transparent; transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .new-chat-btn {
@@ -83,10 +81,22 @@
         .sidebar-btn:hover { background: var(--bg-main); color: var(--text-primary); }
         .sidebar-btn svg { width: 18px; fill: currentColor; }
 
+        /* --- Overlay for Mobile Sidebar --- */
+        #sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999; display: none;
+        }
+
         /* --- MAIN CHAT AREA --- */
-        main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        main { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; }
+        
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; }
         .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .menu-toggle {
+            display: none; background: transparent; border: none; cursor: pointer; color: var(--text-primary);
+        }
+        .menu-toggle svg { width: 28px; fill: currentColor; }
 
         /* RGB ANIMATED TITLE */
         .rgb-title {
@@ -106,15 +116,15 @@
 
         .user-profile {
             width: 38px; height: 38px; background: linear-gradient(45deg, #ff5722, #ff9800); color: white; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; text-transform: uppercase;
+            display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; text-transform: uppercase; flex-shrink: 0;
         }
 
         .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; scroll-behavior: smooth; }
-        .chat-container::-webkit-scrollbar { width: 8px; }
+        .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-thumb { background: #555; border-radius: 10px; }
 
         /* --- GREETING --- */
-        .greeting-screen { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 60%; width: 100%; max-width: 800px; margin-top: 50px; }
+        .greeting-screen { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; height: 60%; width: 100%; max-width: 800px; margin-top: 20px; }
         .greeting-screen h1 {
             font-size: 56px; font-weight: 500; margin-bottom: 10px; letter-spacing: -1px;
             background: -webkit-linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #00ffcc 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #00ffcc 50%, #d96570 56%, #131314 75%, #131314 100%);
@@ -131,22 +141,22 @@
         .bot-avatar { width: 32px; height: 32px; flex-shrink: 0; display: flex; justify-content: center; align-items: flex-start; margin-top: 5px; }
         .bot-avatar svg { width: 24px; fill: var(--accent-color); }
 
-        .user-bubble { background: var(--user-bubble); padding: 12px 20px; border-radius: 24px; font-size: 16px; line-height: 1.5; max-width: 80%; word-wrap: break-word; }
-        .bot-bubble { max-width: 90%; font-size: 16px; line-height: 1.7; color: var(--text-primary); }
+        .user-bubble { background: var(--user-bubble); padding: 12px 20px; border-radius: 24px; font-size: 16px; line-height: 1.5; max-width: 85%; word-wrap: break-word; }
+        .bot-bubble { max-width: 90%; font-size: 16px; line-height: 1.7; color: var(--text-primary); overflow-x: hidden; }
         .bot-bubble p { margin-bottom: 15px; }
         .bot-bubble strong { color: #fff; font-weight: 500; }
         
-        pre { background: #000; padding: 15px; border-radius: 12px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,255,204,0.1); }
-        code { font-family: 'Consolas', monospace; font-size: 14px; color: #00ffcc; }
-        .bot-bubble :not(pre) > code { background: #2a2b2d; padding: 3px 6px; border-radius: 6px; color: var(--accent-color); font-size: 14px; }
+        pre { background: #000; padding: 15px; border-radius: 12px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,255,204,0.1); max-width: 100%; }
+        code { font-family: 'Consolas', monospace; font-size: 14px; color: #00ffcc; white-space: pre-wrap; word-break: break-word; }
+        .bot-bubble :not(pre) > code { background: #2a2b2d; padding: 3px 6px; border-radius: 6px; color: var(--accent-color); font-size: 14px; word-break: break-word; }
 
-        .attached-media-chat { max-width: 250px; border-radius: 12px; margin-bottom: 10px; display: block; border: 1px solid var(--border-color); }
+        .attached-media-chat { max-width: 100%; border-radius: 12px; margin-bottom: 10px; display: block; border: 1px solid var(--border-color); }
 
         /* --- INPUT AREA & ATTACHMENTS --- */
-        .input-area-wrapper { padding: 0 20px 30px; display: flex; justify-content: center; flex-direction: column; align-items: center; }
+        .input-area-wrapper { padding: 0 20px 20px; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; }
         
         .input-box {
-            background: var(--bg-input); width: 100%; max-width: 850px; border-radius: 24px; padding: 10px 20px;
+            background: var(--bg-input); width: 100%; max-width: 850px; border-radius: 24px; padding: 10px 15px;
             display: flex; flex-direction: column; border: 1px solid var(--border-color); transition: 0.3s;
         }
         .input-box:focus-within { background: #2a2b2d; border-color: var(--accent-color); box-shadow: 0 0 10px rgba(0,255,204,0.1); }
@@ -161,17 +171,49 @@
             border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; cursor: pointer; font-weight: bold;
         }
 
-        .input-controls { display: flex; align-items: center; gap: 10px; width: 100%; }
-        .input-controls input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 16px; outline: none; padding: 10px 5px; }
+        .input-controls { display: flex; align-items: center; gap: 8px; width: 100%; }
+        .input-controls input { flex: 1; background: transparent; border: none; color: var(--text-primary); font-size: 16px; outline: none; padding: 10px 5px; min-width: 0; }
         .input-controls input::placeholder { color: var(--text-secondary); }
         
-        .icon-btn { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: 0.2s; }
+        .icon-btn { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; transition: 0.2s; flex-shrink: 0; }
         .icon-btn:hover { background: var(--bg-main); color: var(--accent-color); }
         .icon-btn svg { width: 22px; fill: currentColor; }
         
-        .disclaimer { font-size: 12px; color: var(--text-secondary); margin-top: 15px; text-align: center; }
-        .loading { display: none; margin-bottom: 20px; font-style: italic; color: var(--accent-color); text-align:center; animation: pulse 1s infinite; }
+        .disclaimer { font-size: 11px; color: var(--text-secondary); margin-top: 10px; text-align: center; padding: 0 10px; }
+        .loading { display: none; margin-bottom: 20px; font-style: italic; color: var(--accent-color); text-align:center; animation: pulse 1s infinite; font-size: 14px; }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        /* =========================================================
+           MOBILE RESPONSIVE RULES (MAGIC HAPPENS HERE)
+           ========================================================= */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .header-left { gap: 12px; }
+            header { padding: 12px 15px; }
+            
+            /* Sidebar turns into a mobile drawer */
+            aside { position: fixed; top: 0; left: -100%; height: 100%; }
+            aside.active { left: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+            
+            .rgb-title { font-size: 18px; }
+            .model-selector select { max-width: 100px; font-size: 11px; padding: 6px 8px; }
+            .user-profile { width: 32px; height: 32px; font-size: 14px; }
+            
+            .chat-container { padding: 15px 10px; }
+            .greeting-screen h1 { font-size: 36px; }
+            .greeting-screen h2 { font-size: 30px; }
+            
+            .user-bubble { font-size: 14px; padding: 10px 15px; max-width: 90%; }
+            .bot-bubble { font-size: 14px; max-width: 100%; }
+            .bot-avatar { width: 24px; height: 24px; }
+            .bot-avatar svg { width: 18px; }
+            
+            .input-area-wrapper { padding: 0 10px 15px; }
+            .input-box { padding: 8px 10px; }
+            .input-controls input { font-size: 14px; padding: 8px 5px; }
+            .icon-btn { width: 32px; height: 32px; }
+            .icon-btn svg { width: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -189,8 +231,11 @@
     </div>
 
     <div id="app-container">
-        <aside>
-            <button class="new-chat-btn" onclick="resetChat()">
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+        
+        <aside id="sidebar">
+            <button class="new-chat-btn" onclick="resetChat(); toggleSidebar();">
                 <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New chat
             </button>
             <div class="recent-section">
@@ -205,6 +250,9 @@
         <main>
             <header>
                 <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                    </button>
                     <div class="rgb-title">Mr2X.Ai</div>
                     <div class="model-selector">
                         <select id="model-select">
@@ -229,7 +277,7 @@
                     <div class="input-controls">
                         <input type="file" id="file-upload" accept="image/*, video/*" style="display: none;" onchange="handleFileUpload(event)">
                         
-                        <button class="icon-btn" title="Add Image/Video" onclick="document.getElementById('file-upload').click()">
+                        <button class="icon-btn" title="Add Media" onclick="document.getElementById('file-upload').click()">
                             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                         </button>
                         
@@ -240,7 +288,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="disclaimer">Mr2X.Ai Auto-Engine enabled. Chats are saved to your local device.</div>
+                <div class="disclaimer">Mr2X.Ai Auto-Engine enabled. Chats are saved locally.</div>
             </div>
         </main>
     </div>
@@ -269,6 +317,8 @@
         const typingIndicator = document.getElementById('typing-indicator');
         const greetingScreen = document.getElementById('greeting-screen');
         const modelSelect = document.getElementById('model-select');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
         
         let attachedMediaData = null;
         let attachedMediaType = null;
@@ -286,6 +336,18 @@
                 loginOverlay.style.display = 'flex'; 
             }
         });
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            if(window.innerWidth <= 768) {
+                sidebar.classList.toggle('active');
+                if(sidebar.classList.contains('active')) {
+                    sidebarOverlay.style.display = 'block';
+                } else {
+                    sidebarOverlay.style.display = 'none';
+                }
+            }
+        }
 
         async function fetchLiveModels() {
             try {
@@ -351,16 +413,13 @@
             document.getElementById('greeting-name').innerHTML = `<span style="color:var(--accent-color)">Welcome, ${name}</span>`;
             
             fetchLiveModels();
-            loadChatHistory(); // Load saved chats based on IP/Device!
-            chatInput.focus();
+            loadChatHistory();
+            if(window.innerWidth > 768) chatInput.focus();
         }
 
-        // --- LOCAL STORAGE CHAT HISTORY SAVING ---
         function saveChatHistory() {
             if(currentUserName) {
-                // Save JSON for API context
                 localStorage.setItem(`mr2x_chat_data_${currentUserName}`, JSON.stringify(conversationHistory));
-                // Save HTML for UI rendering
                 localStorage.setItem(`mr2x_chat_html_${currentUserName}`, chatBox.innerHTML);
             }
         }
@@ -374,13 +433,12 @@
                 chatBox.innerHTML = savedHTML;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 
-                // Hide greeting if history exists and isn't empty
                 if(conversationHistory.length > 1) {
                     const greeting = document.getElementById('greeting-screen');
                     if(greeting) greeting.style.display = 'none';
                 }
             } else {
-                resetChat(false); // don't focus if just initializing
+                resetChat(false); 
             }
         }
 
@@ -390,8 +448,8 @@
             greetingScreen.style.display = 'flex';
             conversationHistory = [systemPrompt];
             clearAttachment();
-            saveChatHistory(); // Clear saved data too
-            if(focus) chatInput.focus();
+            saveChatHistory();
+            if(focus && window.innerWidth > 768) chatInput.focus();
         }
 
         function handleFileUpload(event) {
@@ -456,13 +514,12 @@
 
             conversationHistory.push({ role: "user", content: promptContent });
             
-            // Context Window Management
             if (conversationHistory.length > 20) {
                 conversationHistory = [conversationHistory[0], ...conversationHistory.slice(-19)];
             }
-            saveChatHistory(); // Save immediately after user sends
+            saveChatHistory(); 
 
-            let currentModel = document.getElementById('model-select').value;
+            let currentModel = document.getElementById('model-select').value || BACKUP_MODELS[0];
             let modelsToTry = [currentModel, ...BACKUP_MODELS.filter(m => m !== currentModel)];
             
             let success = false;
@@ -498,10 +555,10 @@
                 conversationHistory.pop(); 
             }
 
-            saveChatHistory(); // Save after bot replies
+            saveChatHistory(); 
             typingIndicator.style.display = 'none';
             chatBox.scrollTop = chatBox.scrollHeight;
-            chatInput.focus();
+            if(window.innerWidth > 768) chatInput.focus();
         }
 
         function addUserMessage(text, mediaUrl, mediaType) {
@@ -533,6 +590,14 @@
             const bubble = document.createElement('div');
             bubble.classList.add('bot-bubble');
             bubble.innerHTML = marked.parse(text);
+            
+            // Fix code blocks overlapping on mobile
+            const codes = bubble.querySelectorAll('pre');
+            codes.forEach(c => {
+                c.style.maxWidth = '100%';
+                c.style.overflowX = 'auto';
+            });
+
             row.appendChild(avatar);
             row.appendChild(bubble);
             chatBox.appendChild(row);
